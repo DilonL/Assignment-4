@@ -48,7 +48,7 @@ export class AnimatedCharacter extends gfx.Transform3
         this.overlayPose = new Pose();
     }
 
-     // Entry function for the recursive call
+    // Entry function for the recursive call
     createMeshes(): void
     {
         // Drawing the coordinate axes is a good way to check your work.
@@ -60,10 +60,12 @@ export class AnimatedCharacter extends gfx.Transform3
         this.skeleton.add(axes);
 
         // Call the recursive method for each root bone
-        this.skeleton.rootBones.forEach((rootBone: Bone) => {
-            this.createMeshesRecursive(rootBone)
+        this.skeleton.children.forEach((child: gfx.Transform3) => {
+            if(child instanceof Bone)
+                this.createMeshesRecursive(child);
         });
     }
+
 
     private createMeshesRecursive(bone: Bone): void
     {

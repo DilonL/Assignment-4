@@ -8,48 +8,32 @@
 import * as gfx from 'gophergfx'
 import { Pose } from "./Pose";
 
-export class Bone
+export class Bone extends gfx.Transform3
 {
     public name: string;
     public direction: gfx.Vector3;
     public length: number;
     public dofs: boolean[];
-    public children: Bone[];
 
     public boneToRotationSpace: gfx.Quaternion;
     public rotationToBoneSpace: gfx.Quaternion;
 
-    public transform: gfx.Transform3;
-
     constructor()
     {
+        super();
+
         this.name = '';
         this.direction = new gfx.Vector3();
         this.length = 0;
         this.dofs = [false, false, false];
-        this.children = [];
 
         this.boneToRotationSpace = new gfx.Quaternion();
         this.rotationToBoneSpace = new gfx.Quaternion();
-
-        this.transform = new gfx.Transform3();    
-    }
-
-    createHierarchy(parentTransform: gfx.Transform3): void
-    {
-        this.resetTransform();
-        parentTransform.add(this.transform);
-
-        this.children.forEach((child: Bone) => {
-            child.createHierarchy(this.transform);
-        });
     }
 
     update(pose: Pose): void
     {
         this.resetTransform();
-
-
 
         /** TO DO (PART 2): You will first need to compute the transform.position in the correct 
          * coordinate space. Think of the vertices that make up the geometry of each bone as being 
@@ -86,22 +70,24 @@ export class Bone
          * multiplication is not commutative! 
          * 
          * Finally, you will need to call the update() method for each of the bone's children to
-         * propagate through the entire skeleton.
+         * recursively propagate through the entire skeleton.  Hint: you can iterate through the
+         * array of children and check if each child object is a Bone using the instanceof keyword,
+         * as shown in the AnimatedCharacter.createMeshes() method.
          * 
          * After all these steps are completed, the coordinate axes should appear to form
          * skeletons that are dancing the salsa!  If all the transformations are correct, then 
          * the axes that represent the hands of the two dancers should line up properly when
          * the couple is dancing together.
          */
-
+  
 
         
     }
 
-    private resetTransform(): void
+    resetTransform(): void
     {
-        this.transform.position.copy(this.direction);
-        this.transform.position.multiplyScalar(this.length);
-        this.transform.rotation.setIdentity();
+        this.position.copy(this.direction);
+        this.position.multiplyScalar(this.length);
+        this.rotation.setIdentity();
     }
 }

@@ -25,7 +25,6 @@ export class Skeleton extends gfx.Transform3
     public loaded: boolean;
     public rootPosition: gfx.Vector3;
     public rootRotation: gfx.Quaternion;
-    public rootBones: Bone[];
 
     constructor()
     {
@@ -37,8 +36,6 @@ export class Skeleton extends gfx.Transform3
 
         this.rootPosition = new gfx.Vector3();
         this.rootRotation = new gfx.Quaternion();
-
-        this.rootBones = [];
     }
 
     loadFromASF(filename: string): void
@@ -82,8 +79,6 @@ export class Skeleton extends gfx.Transform3
 
             console.log('Skeleton data loaded from ' + filename + '.');
             Skeleton.numLoading--;
-
-            this.createHierarchy();
         });
     }
 
@@ -229,6 +224,8 @@ export class Skeleton extends gfx.Transform3
                     }
                 }
             }
+
+            bone.resetTransform();
         }
     }
 
@@ -245,13 +242,13 @@ export class Skeleton extends gfx.Transform3
                     if(parent == 'root')
                     {
                         const bone = this.bones.get(child)!;
-                        this.rootBones.push(bone);
+                        this.add(bone);
                     }
                     else
                     {
                         const bone = this.bones.get(child)!;
                         const parentBone = this.bones.get(parent)!;
-                        parentBone.children.push(bone);
+                        parentBone.add(bone);
                     }
                 });
             }
@@ -265,13 +262,6 @@ export class Skeleton extends gfx.Transform3
     public getBone(bone: string): Bone
     {
         return this.bones.get(bone)!;
-    }
-
-    public createHierarchy(): void
-    {
-        this.rootBones.forEach((bone: Bone) => {
-            bone.createHierarchy(this);
-        });
     }
 
     public update(pose: Pose, useAbsolutePosition: boolean): void
@@ -289,9 +279,9 @@ export class Skeleton extends gfx.Transform3
             this.position.add(pose.rootPosition);
         }
 
-        // Update the pose of each bone in the skeleton
-        this.rootBones.forEach((bone: Bone) => {
-              bone.update(pose);
+        this.children.forEach((child: gfx.Transform3) => {
+            if(child instanceof Bone)
+                child.update(pose);
         });
     }
 }
