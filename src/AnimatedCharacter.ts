@@ -9,6 +9,7 @@ import { Skeleton } from './Skeleton'
 import { MotionClip } from './MotionClip'
 import { Pose } from './Pose';
 import { Bone } from './Bone';
+import { Camera, Mesh, Transform3 } from 'gophergfx';
 
 export class AnimatedCharacter extends gfx.Transform3
 {
@@ -25,6 +26,8 @@ export class AnimatedCharacter extends gfx.Transform3
     private overlayTransitionFrames: number[];
     private overlayTime: number;
     private overlayPose: Pose;
+
+    private parts: gfx.Mesh;
 
     constructor(fps = 60, useAbsolutePosition = true)
     {
@@ -46,6 +49,7 @@ export class AnimatedCharacter extends gfx.Transform3
         this.overlayTransitionFrames = [];
         this.overlayTime = 0;  
         this.overlayPose = new Pose();
+        this.parts = new gfx.Mesh;
     }
 
     // Entry function for the recursive call
@@ -56,6 +60,7 @@ export class AnimatedCharacter extends gfx.Transform3
         // character, but once you add this to createMeshesRecursive, you 
         // can draw the axes for each bone.  The visibility of the axes
         // is toggled using a checkbox.
+
         const axes = new gfx.Axes3(0.15);
         this.skeleton.add(axes);
 
@@ -69,12 +74,12 @@ export class AnimatedCharacter extends gfx.Transform3
 
     private createMeshesRecursive(bone: Bone): void
     {
-
-        
-
         // TO DO (PART 1): Draw the coordinate axes for the bone
+        const axes = new gfx.Axes3(0.15);
+        this.translateY(.005)
+        axes.lookAt(bone.direction);
+        bone.add(axes);
         
-
 
          // TO DO (PART 3): You will want to draw something different for each
         // part of the body. An if statement like this is an easy way
@@ -88,12 +93,344 @@ export class AnimatedCharacter extends gfx.Transform3
         // {
         // }
 
+         if(bone.name == 'root')
+         {
+            const part = gfx.MeshFactory.createBox(0.05, 0.05, bone.length);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+        
+         else if (bone.name == 'lhipjoint')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.05);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lfemur')
+         {
+            const part = gfx.MeshFactory.createCylinder(10, .1, .3);
+            part.lookAt(bone.direction);
+            part.translateZ(.06);
+            part.translateY(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            this.parts.add(part)
 
+            bone.add(part); 
+         }
+         else if (bone.name == 'ltibia')
+         {
+            const parts = new gfx.Mesh
+            const part = gfx.MeshFactory.createCone(.15, .1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(.01);
+            part.translateZ(.25);
+            part.translateY(.12);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            parts.add(part)
+
+            const part2 = gfx.MeshFactory.createCone(.1, .4, 10);
+            part2.lookAt(bone.direction);
+            part2.translateZ(.1);
+            part2.translateY(.11);
+            part2.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            parts.add(part2)
+
+            bone.add(parts);
+         }
+         
+         else if (bone.name == 'lfoot')
+         {
+            const part = gfx.MeshFactory.createBox(.1, .25, .1);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length);
+            part.translateY(-.05);
+            part.translateX(-.15);
+            part.translateZ(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            bone.add(part); 
+         }
+         
+         else if (bone.name == 'ltoes')
+         {
+            const part = gfx.MeshFactory.createCone(0.05, 0.1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateY(-.4);
+            part.translateX(-.2);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+           // bone.add(part); 
+         }
+         else if (bone.name == 'rhipjoint')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.05);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rfemur')
+         {
+            const part = gfx.MeshFactory.createCylinder(10, .1, .3);
+            part.lookAt(bone.direction);
+            part.translateZ(.06);
+            part.translateY(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            this.parts.add(part)
+
+            bone.add(part); 
+         }
+         else if (bone.name == 'rtibia')
+         {
+            const parts = new gfx.Mesh
+            const part = gfx.MeshFactory.createCone(.15, .1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(.01);
+            part.translateZ(.25);
+            part.translateY(.12);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            parts.add(part)
+
+            const part2 = gfx.MeshFactory.createCone(.1, .4, 10);
+            part2.lookAt(bone.direction);
+            part2.translateZ(.1);
+            part2.translateY(.11);
+            part2.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            parts.add(part2)
+
+            bone.add(parts);
+         }
+         
+         else if (bone.name == 'rfoot')
+         {
+            const part = gfx.MeshFactory.createBox(.1, .25, .1);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length);
+            part.translateY(-.05);
+            part.translateX(.15);
+            part.translateZ(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            bone.add(part); 
+         }
+         
+         else if (bone.name == 'rtoes')
+         {
+            const part = gfx.MeshFactory.createCone(0.05, 0.1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateY(-.4);
+            part.translateX(-.2);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+           // bone.add(part); 
+         }
+         else if (bone.name == 'lowerback')
+         {
+            const part = gfx.MeshFactory.createBox(0.05, 0.05, .7);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'upperback')
+         {
+            const part = gfx.MeshFactory.createBox(0.25, 0.25, .3);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'thorax')
+         {
+            const part = gfx.MeshFactory.createSphere(.22, 0.1);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lowerneck')
+         {
+            const part = gfx.MeshFactory.createCone(.2, .2,20);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            bone.add(part); 
+         }
+         else if (bone.name == 'upperneck')
+         {
+            const part = gfx.MeshFactory.createCone(.2, .2,20);
+            part.lookAt(bone.direction);
+            part.translateZ(bone.length/2);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            bone.add(part); 
+         }
+         else if (bone.name == 'head')
+         {
+            const part = gfx.MeshFactory.createSphere(0.05, 0.05);
+
+           // const part = gfx.MeshFactory.createBox(0.05, 0.05, bone.length);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lclavicle')
+         {
+            const part = gfx.MeshFactory.createSphere(0.15, .15);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateY(.1);
+            part.translateX(.01);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lhumerus')
+         {
+            const parts = new gfx.Mesh
+            const part = gfx.MeshFactory.createCone(.12, .3,10);
+            part.lookAt(bone.direction);
+            part.translateZ(.13);
+            part.translateY(.10);
+            part.translateX(-.05);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            parts.add(part)
+
+            const part2 = gfx.MeshFactory.createCone(.1, .25,10);
+            part2.lookAt(bone.direction);
+            part2.translateZ(.20);
+            part2.translateY(.10);
+            part2.translateX(-.05);
+            part2.rotateX(gfx.MathUtils.degreesToRadians(90));
+            parts.add(part2)
+            bone.add(parts); 
+         }
+         else if (bone.name == 'lradius')
+         {
+            const part = gfx.MeshFactory.createBox(0.15, 0.15, .2);
+
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(-.01);
+            part.translateY(.01);
+            part.translateZ(.12);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lwrist')
+         {
+            const part = gfx.MeshFactory.createCone(0.13, .1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(-.01);
+            part.translateY(0);
+            part.translateZ(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            bone.add(part); 
+         }
+         else if (bone.name == 'lhand')
+         {
+            const part = gfx.MeshFactory.createSphere(0.12, 0.12);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(0);
+            part.translateY(0);
+            part.translateZ(0);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lthumb')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.01);
+            part.lookAt(bone.direction);
+            part.translateZ(bone.length/2);
+            part.translateY(0);
+            bone.add(part); 
+         }
+         else if (bone.name == 'lfingers')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.1,);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rclavicle')
+         {
+            const part = gfx.MeshFactory.createSphere(0.15, .15);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateY(.1);
+            part.translateX(.01);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rhumerus')
+         {
+            const parts = new gfx.Mesh
+            const part = gfx.MeshFactory.createCone(.12, .3,10);
+            part.lookAt(bone.direction);
+            part.translateZ(.13);
+            part.translateY(.10);
+            part.translateX(-.05);
+            part.rotateX(gfx.MathUtils.degreesToRadians(-90));
+            parts.add(part)
+
+            const part2 = gfx.MeshFactory.createCone(.1, .25,10);
+            part2.lookAt(bone.direction);
+            part2.translateZ(.20);
+            part2.translateY(.10);
+            part2.translateX(-.05);
+            part2.rotateX(gfx.MathUtils.degreesToRadians(90));
+            parts.add(part2)
+            bone.add(parts); 
+         }
+         else if (bone.name == 'rradius')
+         {
+            const part = gfx.MeshFactory.createBox(0.15, 0.15, .2);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(-.01);
+            part.translateY(.01);
+            part.translateZ(.12);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rwrist')
+         {
+            const part = gfx.MeshFactory.createCone(0.13, .1, 10);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(-.01);
+            part.translateY(0);
+            part.translateZ(.1);
+            part.rotateX(gfx.MathUtils.degreesToRadians(90));
+            bone.add(part); 
+         }
+         else if (bone.name == 'rhand')
+         {
+            const part = gfx.MeshFactory.createSphere(0.12, 0.12);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            part.translateX(0);
+            part.translateY(0);
+            part.translateZ(0);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rthumb')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.01);
+            part.lookAt(bone.direction);
+            part.translateZ(bone.length/2);
+            part.translateY(0);
+            bone.add(part); 
+         }
+         else if (bone.name == 'rfingers')
+         {
+            const part = gfx.MeshFactory.createSphere(0.1, 0.1,);
+            part.lookAt(bone.direction);
+            part.translateZ(-bone.length/2);
+            bone.add(part); 
+         }
 
         // TO DO (PART 1): Recursively call this function for each of the bone's children
+      
+        bone.children.forEach((child: gfx.Transform3) => {
+            if(child instanceof Bone)
+                this.createMeshesRecursive(child);
 
-  
-
+        });
+        
     }
 
     
